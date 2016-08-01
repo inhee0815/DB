@@ -65,7 +65,7 @@ public class ConnectDB {
 							} catch (Exception e) {
 								System.out.println(e);
 							} finally {
-								System.out.println("Insert Completed");
+								System.out.println("Insert Completed!");
 							}
 						}
 					} catch (Exception e) {
