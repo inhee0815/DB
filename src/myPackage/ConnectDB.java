@@ -56,9 +56,9 @@ public class ConnectDB {
 							try {
 								
 								PreparedStatement posted = con
-										.prepareStatement("INSERT INTO notices (title, writer, reg_date) VALUES ('"
+										.prepareStatement("INSERT INTO board (title, writer, reg_date) VALUES ('"
 												+ a.getContent().toString() + "','" + writer.getContent().toString()
-												+ "','" + date.getContent().toString() + "')");
+												+ "','" + date.getContent().toString() + "') ON DUPLICATE KEY UPDATE title=VALUES(title)");
 								// dynamic parsing으로 sql문을 parsing한 후 입력된 해당 값을
 								// parsing된 sql문에 binding하여 실행
 								// sql문을 먼저 parsing하여 입력되는 값이 여러개일 경우 sql문을 여러번

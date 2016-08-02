@@ -13,6 +13,7 @@
 		
 		try {
 			ConnectDB db = new ConnectDB();
+			db.post();
 			String driver = "com.mysql.jdbc.Driver";
 			String url = "jdbc:mysql://localhost:3306/test";
 			String username = "root";
@@ -40,7 +41,7 @@
 		</tr>
 		<%
 			while (rs.next()) {
-				int idx = rs.getInt(1);
+					int idx = rs.getInt(1);
 					String title = rs.getString("title");
 					String writer = rs.getString("writer");
 					String date = rs.getString("reg_date");
@@ -70,7 +71,7 @@
 			<td colspan="4" height="5"></td>
 		</tr>
 		<tr align="center">
-			<td><input type=button value="조회" OnClick="post()"></td>
+			<td><input type=button value="조회" OnClick="db.post()"></td>
 		</tr>
 	</table>
 </body>

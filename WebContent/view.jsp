@@ -57,7 +57,7 @@
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">제목</td>
-						<td width="319"></td>
+						<td width="319"><%=title%></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd">
@@ -65,8 +65,8 @@
 					</tr>
 					<tr>
 						<td width="0">&nbsp;</td>
-						<td align="center" width="76">이름</td>
-						<td width="319"></td>
+						<td align="center" width="76">작성자</td>
+						<td width="319"><%=writer%></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd">
@@ -75,7 +75,7 @@
 					<tr>
 						<td width="0">&nbsp;</td>
 						<td align="center" width="76">작성일</td>
-						<td width="319"></td>
+						<td width="319"><%=date%></td>
 						<td width="0">&nbsp;</td>
 					</tr>
 					<tr height="1" bgcolor="#dddddd">
@@ -103,10 +103,9 @@
 					</tr>
 					<tr align="center">
 						<td width="0">&nbsp;</td>
-						<td colspan="2" width="399"><input type=button value="글쓰기">
-							<input type=button value="답글"> <input type=button
-							value="목록"> <input type=button value="수정"> <input
-							type=button value="삭제">
+						<td colspan="2" width="399">
+							 <input type=button
+							value="목록"> 
 						<td width="0">&nbsp;</td>
 					</tr>
 				</table>
