@@ -10,7 +10,7 @@
 </head>
 <body>
 	<%
-		
+
 		try {
 			ConnectDB db = new ConnectDB();
 			db.post();
@@ -21,8 +21,10 @@
 			Class.forName(driver);
 
 			Connection conn = DriverManager.getConnection(url, username, password);
-			PreparedStatement pstmt = conn.prepareStatement("Select * FROM board");
+			PreparedStatement pstmt = conn.prepareStatement("Select * FROM ssu");
 			ResultSet rs = pstmt.executeQuery();
+		
+			
 	%>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr height="5">
@@ -45,6 +47,7 @@
 					String title = rs.getString("title");
 					String writer = rs.getString("writer");
 					String date = rs.getString("reg_date");
+					
 		%>
 		<tr height="25" align="center">
 			<td>&nbsp;</td>
