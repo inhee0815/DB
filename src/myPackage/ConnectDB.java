@@ -1,5 +1,6 @@
 package myPackage;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +14,8 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
@@ -21,11 +24,11 @@ public class ConnectDB {
 
 	public void post() throws Exception {
 		final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview";
-
+		boolean IsUpdate = false;
 		Connection con = null;
 		Source source = null;
+		
 		try
-
 		{
 			InputStream is = new URL(SSUurl).openStream();
 			source = new Source(new InputStreamReader(is, "utf-8"));
@@ -44,7 +47,7 @@ public class ConnectDB {
 				Element tbody = (Element) table.getAllElements(HTMLElementName.TBODY).get(0);
 				int trcount = tbody.getAllElements(HTMLElementName.TR).size();
 
-				for (int i = 0; i < trcount; i++) {
+				for (int i = trcount-1; i >= 0 ; i--) {
 					try {
 
 						Element tr = (Element) tbody.getAllElements(HTMLElementName.TR).get(i);
@@ -62,20 +65,31 @@ public class ConnectDB {
 								// 원하는 값을 binding하여 사용하므로 자원의 낭비가 적지만 무거움
 								PreparedStatement nstmt = con.prepareStatement("Select title from ssu where num=1"); // 최상위글
 								ResultSet rs = nstmt.executeQuery();
-								rs.next();
-								if (!rs.getString("title").equals(a.getContent().toString())) { //최상위글하고 같으면 
+								
+								if (rs.next()) { //최상위글 있을 경우
+									if (!rs.getString("title").equals(a.getContent().toString())) { // 최상위글하고
+																									// 다르면
+										PreparedStatement posted = con
+												.prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
+														+ a.getContent().toString() + "','"
+														+ writer.getContent().toString() + "','"
+														+ date.getContent().toString() + "','" + a.getAttributeValue("href") + "')"); // 업데이트
+										posted.executeUpdate();
+										IsUpdate=true;
+									} else {
+										break;
+									}
+								} else { //없는 경우 한번 쭉 받아오기
 									PreparedStatement posted = con
-											.prepareStatement("INSERT INTO ssu (title, writer, reg_date) VALUES ('"
-													+ a.getContent().toString() + "','" + writer.getContent().toString()
-													+ "','" + date.getContent().toString() + "')"); //업데이트
+											.prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
+													+ a.getContent().toString() + "','"
+													+ writer.getContent().toString() + "','"
+													+ date.getContent().toString() + "','" + a.getAttributeValue("href") + "')"); // 업데이트
 									posted.executeUpdate();
-								} else{
-									break;
 								}
-
 								// System.out.println("rs = "+rs);
 							} catch (Exception e) {
-								System.out.println(e);
+								System.out.println("Insert Error : "+e);
 							} finally {
 								System.out.println("Insert Completed!");
 							}
@@ -86,7 +100,17 @@ public class ConnectDB {
 				}
 			}
 		}
-
+		JSONObject obj = new JSONObject();
+		obj.put("update", IsUpdate);
+		try{
+			FileWriter file = new FileWriter("c:\\myJson.json");
+			file.write(obj.toJSONString());
+			file.flush();
+			file.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("Create JSON Object : " + obj);
 	}
 
 	public void showArticles(PrintWriter out) throws Exception {

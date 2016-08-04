@@ -6,11 +6,31 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>게시판</title>
+<script src="myJson.json" language="JavaScript">
+function boardCheck() //업데이트 할거 있으면 업데이트하고 없으면 새글이 없다고 알려줌
+{
+		
+		alert("조회할래조회할거니정말조회할건데조회가안되네");
+		
+			var fileReader = new XMLHttpRequest();
+			fileReader.open('GET', 'myJson.json', true);
+			fileReader.onload = function() {
+				if (fileReader.status == 200) {
+					var properties = JSON.parse(fileReader.responseText);
+					var data = properties.data;
+				}
+			};
+			fileReader.send(null);
+		}
+
+	}
+</script>
+
 </head>
 <body>
 	<%
-
 		try {
 			ConnectDB db = new ConnectDB();
 			db.post();
@@ -23,8 +43,6 @@
 			Connection conn = DriverManager.getConnection(url, username, password);
 			PreparedStatement pstmt = conn.prepareStatement("Select * FROM ssu");
 			ResultSet rs = pstmt.executeQuery();
-		
-			
 	%>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr height="5">
@@ -47,12 +65,14 @@
 					String title = rs.getString("title");
 					String writer = rs.getString("writer");
 					String date = rs.getString("reg_date");
-					
+					String link = rs.getString("url");
 		%>
 		<tr height="25" align="center">
 			<td>&nbsp;</td>
-			<td><%=idx %></td>                                           
-			<td align="left"><a href="view.jsp?idx=<%=idx%>"><%=title%></td> <!-- 제목에 링크거는 태그 -->
+			<td><%=idx%></td>
+			<td align="left" style="cursor: pointer"
+				OnClick="location.href='<%=link%>'"><%=title%></td>
+			<!-- 제목에 링크거는 태그 -->
 			<td align="center"><%=writer%></td>
 			<td align="center"><%=date%></td>
 			<td>&nbsp;</td>
@@ -74,7 +94,7 @@
 			<td colspan="4" height="5"></td>
 		</tr>
 		<tr align="center">
-			<td><input type=button value="조회" OnClick="db.post()"></td>
+			<td><input type=button value="조회" OnClick="boardCheck()"></td>
 		</tr>
 	</table>
 </body>
