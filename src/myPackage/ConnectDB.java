@@ -27,9 +27,8 @@ public class ConnectDB {
 		boolean IsUpdate = false;
 		Connection con = null;
 		Source source = null;
-		
-		try
-		{
+
+		try {
 			InputStream is = new URL(SSUurl).openStream();
 			source = new Source(new InputStreamReader(is, "utf-8"));
 			source.fullSequentialParse();
@@ -38,76 +37,144 @@ public class ConnectDB {
 			e.printStackTrace();
 		}
 
-		List<Element> tableList = source.getAllElements(HTMLElementName.TABLE);
+		try {
+			PreparedStatement nstmt = con.prepareStatement("Select title from ssu order by num desc limit 1"); // 최상위글
+			ResultSet rs = nstmt.executeQuery();
+			if (!rs.next()) { // 최상위글 없을 경우 즉 최초
+				System.out.println("빈 테이블");
+				List<Element> tableList = source.getAllElements(HTMLElementName.TABLE);
 
-		for (Iterator<Element> tableIter = tableList.iterator(); tableIter.hasNext();) {
-			Element table = (Element) tableIter.next();
-			String tag = table.getAttributeValue("class");
-			if (tag.equals("bbs-list")) {
-				Element tbody = (Element) table.getAllElements(HTMLElementName.TBODY).get(0);
-				int trcount = tbody.getAllElements(HTMLElementName.TR).size();
+				for (Iterator<Element> tableIter = tableList.iterator(); tableIter.hasNext();) {
+					Element table = (Element) tableIter.next();
+					String tag = table.getAttributeValue("class");
+					if (tag.equals("bbs-list")) {
+						Element tbody = (Element) table.getAllElements(HTMLElementName.TBODY).get(0);
+						int trcount = tbody.getAllElements(HTMLElementName.TR).size();
 
-				for (int i = trcount-1; i >= 0 ; i--) {
-					try {
-
-						Element tr = (Element) tbody.getAllElements(HTMLElementName.TR).get(i);
-						Element td = (Element) tr.getAllElements(HTMLElementName.TD).get(1);
-						Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
-						Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
-						Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
-						if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
+						for (int i = trcount - 1; i >= 0; i--) {
 							try {
 
-								// dynamic parsing으로 sql문을 parsing한 후 입력된 해당 값을
-								// parsing된 sql문에 binding하여 실행
-								// sql문을 먼저 parsing하여 입력되는 값이 여러개일 경우 sql문을 여러번
-								// parsing하지 않고 parsing된 sql문에
-								// 원하는 값을 binding하여 사용하므로 자원의 낭비가 적지만 무거움
-								PreparedStatement nstmt = con.prepareStatement("Select title from ssu where num=1"); // 최상위글
-								ResultSet rs = nstmt.executeQuery();
-								
-								if (rs.next()) { //최상위글 있을 경우
-									if (!rs.getString("title").equals(a.getContent().toString())) { // 최상위글하고
-																									// 다르면
-										PreparedStatement posted = con
-												.prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
-														+ a.getContent().toString() + "','"
-														+ writer.getContent().toString() + "','"
-														+ date.getContent().toString() + "','" + a.getAttributeValue("href") + "')"); // 업데이트
-										posted.executeUpdate();
-										IsUpdate=true;
-									} else {
-										break;
-									}
-								} else { //없는 경우 한번 쭉 받아오기
+								Element tr = (Element) tbody.getAllElements(HTMLElementName.TR).get(i);
+								Element td = (Element) tr.getAllElements(HTMLElementName.TD).get(1);
+								Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
+								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
+								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
+								if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
 									PreparedStatement posted = con
 											.prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
-													+ a.getContent().toString() + "','"
-													+ writer.getContent().toString() + "','"
-													+ date.getContent().toString() + "','" + a.getAttributeValue("href") + "')"); // 업데이트
+													+ a.getContent().toString() + "','" + writer.getContent().toString()
+													+ "','" + date.getContent().toString() + "','"
+													+ a.getAttributeValue("href") + "')"); // 업데이트
 									posted.executeUpdate();
+									IsUpdate = true;
 								}
-								// System.out.println("rs = "+rs);
 							} catch (Exception e) {
-								System.out.println("Insert Error : "+e);
+								System.out.println("Insert Error : " + e);
 							} finally {
 								System.out.println("Insert Completed!");
 							}
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
+					}
+				}
+			} else { // 최상위글 있을 때
+				List<Element> tableList = source.getAllElements(HTMLElementName.TABLE);
+
+				for (Iterator<Element> tableIter = tableList.iterator(); tableIter.hasNext();) {
+					Element table = (Element) tableIter.next();
+					String tag = table.getAttributeValue("class");
+					if (tag.equals("bbs-list")) {
+						Element tbody = (Element) table.getAllElements(HTMLElementName.TBODY).get(0);
+						int trcount = tbody.getAllElements(HTMLElementName.TR).size();
+
+						for (int i = 0; i < trcount; i++) {
+							try {
+								Element tr = (Element) tbody.getAllElements(HTMLElementName.TR).get(i);
+								Element td = (Element) tr.getAllElements(HTMLElementName.TD).get(1);
+								Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
+								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
+								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
+								if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
+									if (!rs.getString("title").equals(a.getContent().toString())) { // 최상위글하고
+										// 다르면
+										System.out.println(rs.getString("title") + "!=" + a.getContent()); 
+										PreparedStatement posted = con.prepareStatement(
+												"INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
+														+ a.getContent().toString() + "','"
+														+ writer.getContent().toString() + "','"
+														+ date.getContent().toString() + "','"
+														+ a.getAttributeValue("href") + "')"); // 업데이트
+										posted.executeUpdate();
+										IsUpdate = true;
+									} else {
+										System.out.println(rs.getString("title") + "=" + a.getContent()); 
+										break;
+									}
+								}
+							} catch (Exception e) {
+								System.out.println("Insert Error : " + e);
+							}
+						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
+		/*
+		 * List<Element> tableList =
+		 * source.getAllElements(HTMLElementName.TABLE);
+		 * 
+		 * for (Iterator<Element> tableIter = tableList.iterator();
+		 * tableIter.hasNext();) { Element table = (Element) tableIter.next();
+		 * String tag = table.getAttributeValue("class"); if
+		 * (tag.equals("bbs-list")) { Element tbody = (Element)
+		 * table.getAllElements(HTMLElementName.TBODY).get(0); int trcount =
+		 * tbody.getAllElements(HTMLElementName.TR).size();
+		 * 
+		 * for (int i = trcount-1; i >= 0 ; i--) { try {
+		 * 
+		 * Element tr = (Element)
+		 * tbody.getAllElements(HTMLElementName.TR).get(i); Element td =
+		 * (Element) tr.getAllElements(HTMLElementName.TD).get(1); Element a =
+		 * (Element) td.getAllElements(HTMLElementName.A).get(0); Element writer
+		 * = (Element) tr.getAllElements(HTMLElementName.TD).get(3); Element
+		 * date = (Element) tr.getAllElements(HTMLElementName.TD).get(4); if
+		 * ((a.getContent().toString().substring(2, 4)).equals("학사")) { try {
+		 * 
+		 * // dynamic parsing으로 sql문을 parsing한 후 입력된 해당 값을 // parsing된 sql문에
+		 * binding하여 실행 // sql문을 먼저 parsing하여 입력되는 값이 여러개일 경우 sql문을 여러번 //
+		 * parsing하지 않고 parsing된 sql문에 // 원하는 값을 binding하여 사용하므로 자원의 낭비가 적지만 무거움
+		 * PreparedStatement nstmt = con.
+		 * prepareStatement("Select title from ssu order by num desc limit 1");
+		 * // 최상위글 ResultSet rs = nstmt.executeQuery();
+		 * 
+		 * if (rs.next()) { //최상위글 있을 경우 if
+		 * (!rs.getString("title").equals(a.getContent().toString())) { //
+		 * 최상위글하고 // 다르면 PreparedStatement posted = con
+		 * .prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
+		 * + a.getContent().toString() + "','" + writer.getContent().toString()
+		 * + "','" + date.getContent().toString() + "','" +
+		 * a.getAttributeValue("href") + "')"); // 업데이트 posted.executeUpdate();
+		 * IsUpdate=true; } else { break; } } else { //없는 경우 한번 쭉 받아오기
+		 * PreparedStatement posted = con
+		 * .prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
+		 * + a.getContent().toString() + "','" + writer.getContent().toString()
+		 * + "','" + date.getContent().toString() + "','" +
+		 * a.getAttributeValue("href") + "')"); // 업데이트 posted.executeUpdate();
+		 * } // System.out.println("rs = "+rs); } catch (Exception e) {
+		 * System.out.println("Insert Error : "+e); } finally {
+		 * System.out.println("Insert Completed!"); } } } catch (Exception e) {
+		 * e.printStackTrace(); } } } }
+		 */
 		JSONObject obj = new JSONObject();
 		obj.put("update", IsUpdate);
-		try{
+		try {
 			FileWriter file = new FileWriter("c:\\myJson.json");
 			file.write(obj.toJSONString());
 			file.flush();
 			file.close();
-		} catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		System.out.println("Create JSON Object : " + obj);

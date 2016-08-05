@@ -1,4 +1,5 @@
 <%@page import="java.io.PrintWriter"%>
+<%@ page import="java.io.*,java.util.*"%>
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
 	pageEncoding="EUC-KR"%>
 <%@ page import="java.sql.*"%>
@@ -8,29 +9,143 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>게시판</title>
-<script src="myJson.json" language="JavaScript">
-function boardCheck() //업데이트 할거 있으면 업데이트하고 없으면 새글이 없다고 알려줌
-{
-		
-		alert("조회할래조회할거니정말조회할건데조회가안되네");
-		
-			var fileReader = new XMLHttpRequest();
-			fileReader.open('GET', 'myJson.json', true);
-			fileReader.onload = function() {
-				if (fileReader.status == 200) {
-					var properties = JSON.parse(fileReader.responseText);
-					var data = properties.data;
-				}
-			};
-			fileReader.send(null);
-		}
-
-	}
-</script>
-
 </head>
 <body>
+	<br />
+
+	<div align="center" style="text-align: center">
+
+
+
+
+		<br /> <label id="hours"> 00</label>:<label id="minutes">00</label>:<label
+			id="seconds">00</label> <br /> <input type="button" id="pausebutton"
+			onclick="pauseTimer()" value="Pause"> <input type="button"
+			id="stopbutton" onclick="stopTimer()" value="Stop"> <br /> <label
+			id="totalTime"> </label>
+
+	</div>
+	<br />
+
+
+	<script language="javascript">
+		//자바스크립트 시작
+		var hoursLabel = document.getElementById("hours");
+		var minutesLabel = document.getElementById("minutes");
+		var secondsLabel = document.getElementById("seconds");
+		var totalTime = document.getElementById("totalTime");
+		var totalSeconds = 0;
+		var totalMinutes = 0;
+		var totalHours = 0;
+		var counter;
+		var timerOn;
+		var htmlResets;
+		var totalMills = 0;
+
+		(function startTimer() { //즉시 실행 함수, 실행하자마자 타이머가 돌아가도록
+
+			if (timerOn == 1) {
+				return;
+			} else {
+				counter = setInterval(setTime, 10);
+				//setTime마다 함수 실행, milliseconds의 시간이 지날때마다 함수 실행
+				timerOn = 1;
+				htmlResets = 0;
+			}
+		})();
+
+		function pauseTimer() {
+
+			if (timerOn == 1) {
+				clearInterval(counter);
+				timerOn = 0;
+			}
+			if (htmlResets == 1) {
+				hoursLabel.innerHTML = "00";
+				minutesLabel.innerHTML = "00";
+				secondsLabel.innerHTML = "00";
+				totalMills = 0;
+				totalSeconds = 0;
+				totalMinutes = 0;
+				totalHours = 0;
+			} else {
+				htmlResets = 1;
+			}
+
+		}
+
+		function stopTimer() {
+			totalTime.innerHTML = "Time Recorded: " + hoursLabel.innerHTML
+					+ ":" + minutesLabel.innerHTML + ":"
+					+ secondsLabel.innerHTML;
+			hoursLabel.innerHTML = "00";
+			minutesLabel.innerHTML = "00";
+			secondsLabel.innerHTML = "00";
+			totalMills = 0;
+			totalSeconds = 0;
+			totalMinutes = 0;
+			totalHours = 0;
+			clearInterval(counter);
+			timerOn = 0;
+
+		}
+
+		function setTime() {
+			++totalMills;
+			if (totalHours == 99 & totalMinutes == 59 & totalSeconds == 60) {
+				totalHours = 0;
+				totalMinutes = 0;
+				totalSeconds = 0;
+				hoursLabel.innerHTML = "00";
+				minutesLabel.innerHTML = "00";
+				secondsLabel.innerHTML = "00";
+				clearInterval(counter);
+
+			}
+
+			if (totalMills == 100) { //100이 00:00:01
+				totalSeconds++;
+				
+				secondsLabel.innerHTML = pad(totalSeconds % 60);
+				totalMills = 0;
+
+			}
+
+			if (totalSeconds == 60) {
+
+				totalMinutes++;
+				minutesLabel.innerHTML = pad(totalMinutes % 60);
+				totalSeconds = 0;
+
+			}
+
+			if (totalMinutes == 60) {
+				totalHours++;
+				hoursLabel.innerHTML = pad(totalHours);
+				totalMinutes = 0;
+
+			}
+			if(totalMinutes==5) {
+				clearInterval(counter);
+			}
+
+		}
+
+		function pad(val) {
+
+			var valString = val + "";
+			if (valString.length < 2) {
+				return "0" + valString;
+			} else {
+				return valString;
+
+			}
+
+		}
+	</script>
+
 	<%
+		response.setIntHeader("Refresh", 300);
 		try {
 			ConnectDB db = new ConnectDB();
 			db.post();
@@ -93,8 +208,7 @@ function boardCheck() //업데이트 할거 있으면 업데이트하고 없으면 새글이 없다고 �
 		<tr>
 			<td colspan="4" height="5"></td>
 		</tr>
-		<tr align="center">
-			<td><input type=button value="조회" OnClick="boardCheck()"></td>
+
 		</tr>
 	</table>
 </body>
