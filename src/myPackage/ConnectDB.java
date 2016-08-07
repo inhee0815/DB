@@ -38,7 +38,7 @@ public class ConnectDB {
 		}
 
 		try {
-			PreparedStatement nstmt = con.prepareStatement("Select title from ssu order by num desc limit 1"); // 최상위글
+			PreparedStatement nstmt = con.prepareStatement("Select url from ssu order by num desc limit 1"); // 최상위글
 			ResultSet rs = nstmt.executeQuery();
 			if (!rs.next()) { // 최상위글 없을 경우 즉 최초
 				System.out.println("빈 테이블");
@@ -94,7 +94,7 @@ public class ConnectDB {
 								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
 								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
 								if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
-									if (!rs.getString("title").equals(a.getContent().toString())) { // 최상위글하고
+									if (!rs.getString("url").equals(a.getAttributeValue("href"))) { // 최상위글하고
 										// 다르면
 										System.out.println(rs.getString("title") + "!=" + a.getContent()); 
 										PreparedStatement posted = con.prepareStatement(
