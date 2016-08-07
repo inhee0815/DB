@@ -23,7 +23,8 @@ import net.htmlparser.jericho.Source;
 public class ConnectDB {
 
 	public void post() throws Exception {
-		final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview";
+		//final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview";
+		final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview&_EXT_MIRRORBBS_sCategory2=학사"
 		boolean IsUpdate = false;
 		Connection con = null;
 		Source source = null;
@@ -59,7 +60,7 @@ public class ConnectDB {
 								Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
 								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
 								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
-								if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
+								//if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
 									PreparedStatement posted = con
 											.prepareStatement("INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
 													+ a.getContent().toString() + "','" + writer.getContent().toString()
@@ -67,7 +68,7 @@ public class ConnectDB {
 													+ a.getAttributeValue("href") + "')"); // 업데이트
 									posted.executeUpdate();
 									IsUpdate = true;
-								}
+								//}
 							} catch (Exception e) {
 								System.out.println("Insert Error : " + e);
 							} finally {
@@ -93,7 +94,7 @@ public class ConnectDB {
 								Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
 								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
 								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
-								if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
+								//if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
 									if (!rs.getString("url").equals(a.getAttributeValue("href"))) { // 최상위글하고
 										// 다르면
 										System.out.println(rs.getString("title") + "!=" + a.getContent()); 
@@ -109,7 +110,7 @@ public class ConnectDB {
 										System.out.println(rs.getString("title") + "=" + a.getContent()); 
 										break;
 									}
-								}
+								//}
 							} catch (Exception e) {
 								System.out.println("Insert Error : " + e);
 							}

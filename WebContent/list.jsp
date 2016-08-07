@@ -9,14 +9,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>게시판</title>
+<link href="style.css" rel="styleseet" type="text/css">
 </head>
 <body>
 	<br />
 
 	<div align="center" style="text-align: center">
-
-
-
 
 		<br /> <label id="hours"> 00</label>:<label id="minutes">00</label>:<label
 			id="seconds">00</label> <br /> <input type="button" id="pausebutton"
