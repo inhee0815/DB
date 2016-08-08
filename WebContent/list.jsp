@@ -158,11 +158,11 @@
 	%>
 	<table width="70%" cellpadding="0" cellspacing="0" border="0">
 
-		<tr>
-			<td width="40">번호</td>
-			<td width="379">제목</td>
-			<td width="73">작성자</td>
-			<td width="164">작성일</td>
+		<tr bgcolor="#41a4d2">
+			<td align="center" width="40">번호</td>
+			<td align="center" width="379">제목</td>
+			<td align="center" width="73">작성자</td>
+			<td align="center" width="164">작성일</td>
 
 		</tr>
 		<%
@@ -180,7 +180,6 @@
 			<!-- 제목에 링크거는 태그 -->
 			<td align="center"><%=writer%></td>
 			<td align="center"><%=date%></td>
-
 		</tr>
 		<%
 			}
@@ -190,17 +189,9 @@
 				out.println(e.toString());
 			}
 		%>
-		<tr height="1" bgcolor="#82B5DF">
-			<td colspan="6" width="752"></td>
-		</tr>
+		
 	</table>
-	<table width="100%" cellpadding="0" cellspacing="0" border="0">
-		<tr>
-			<td colspan="4" height="5"></td>
-		</tr>
-
-		</tr>
-	</table>
+	
 </body>
 </html>
 
