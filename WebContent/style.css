@@ -1,6 +1,37 @@
-table{
-	background-color:#f6f6f6;
-	border-collapse:collapse;
-	border-color:navy;
-	border-style:dashed;
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+table {
+	background-color: #f6f6f6;
+	border-collapse: collapse;
+	border-color: navy;
+	border-style: dashed;
+	font-family: '' Nanum Gothic '', sans-serif;
+	margin: auto;
+	margin-left: expression((( document.body.clientWidth > 800)? ((document.body.clientWidth-800)/2):
+		 0)+ "px");
+    text-align: left;
+    line-height: 1.5;
+    border-left: 1px solid #ccc;
+    
 }
+table tr td{
+	padding: 10px;
+    font-weight: bold;
+    border-top: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: 2px solid #41a4d2;
+    background: ##F4F7FB;
+}
+
+.timer{
+	font-size:30pt;
+}
+.timer label{
+	background: #abd7eb;
+	margin:5px;
+	-webkit-border-radius:8px;
+}
+	
+	
+
+

@@ -9,17 +9,15 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>게시판</title>
-<link href="style.css" rel="styleseet" type="text/css">
+<link href="style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 	<br />
 
-	<div align="center" style="text-align: center">
+	<div class="timer" align="center" style="text-align: center">
 
 		<br /> <label id="hours"> 00</label>:<label id="minutes">00</label>:<label
-			id="seconds">00</label> <br /> <input type="button" id="pausebutton"
-			onclick="pauseTimer()" value="Pause"> <input type="button"
-			id="stopbutton" onclick="stopTimer()" value="Stop"> <br /> <label
+			id="seconds">00</label> <br /> <br /> <label
 			id="totalTime"> </label>
 
 	</div>
@@ -39,9 +37,9 @@
 		var timerOn;
 		var htmlResets;
 		var totalMills = 0;
-
+		var refresh;
 		(function startTimer() { //즉시 실행 함수, 실행하자마자 타이머가 돌아가도록
-
+			refresh = setTimeout("location.reload()",60000*5);
 			if (timerOn == 1) {
 				return;
 			} else {
@@ -52,7 +50,7 @@
 			}
 		})();
 
-		function pauseTimer() {
+		/* function pauseTimer() {
 
 			if (timerOn == 1) {
 				clearInterval(counter);
@@ -70,9 +68,9 @@
 				htmlResets = 1;
 			}
 
-		}
+		} */
 
-		function stopTimer() {
+		/* function stopTimer() {
 			totalTime.innerHTML = "Time Recorded: " + hoursLabel.innerHTML
 					+ ":" + minutesLabel.innerHTML + ":"
 					+ secondsLabel.innerHTML;
@@ -84,9 +82,10 @@
 			totalMinutes = 0;
 			totalHours = 0;
 			clearInterval(counter);
+			clear
 			timerOn = 0;
 
-		}
+		} */
 
 		function setTime() {
 			++totalMills;
@@ -143,7 +142,7 @@
 	</script>
 
 	<%
-		response.setIntHeader("Refresh", 300);
+		//response.setIntHeader("Refresh", 10);
 		try {
 			ConnectDB db = new ConnectDB();
 			db.post();
@@ -157,20 +156,14 @@
 			PreparedStatement pstmt = conn.prepareStatement("Select * FROM ssu");
 			ResultSet rs = pstmt.executeQuery();
 	%>
-	<table width="100%" cellpadding="0" cellspacing="0" border="0">
-		<tr height="5">
-			<td width="5"></td>
-		</tr>
-		<tr
-			style="background: url('img/table_mid.gif') repeat-x; text-align: center;">
-			<td width="5"><img src="img/table_left.gif" width="5"
-				height="30" /></td>
-			<td width="73">번호</td>
+	<table width="70%" cellpadding="0" cellspacing="0" border="0">
+
+		<tr>
+			<td width="40">번호</td>
 			<td width="379">제목</td>
 			<td width="73">작성자</td>
 			<td width="164">작성일</td>
-			<td width="7"><img src="img/table_right.gif" width="5"
-				height="30" /></td>
+
 		</tr>
 		<%
 			while (rs.next()) {
@@ -180,15 +173,14 @@
 					String date = rs.getString("reg_date");
 					String link = rs.getString("url");
 		%>
-		<tr height="25" align="center">
-			<td>&nbsp;</td>
+		<tr height="30" align="center">
 			<td><%=idx%></td>
 			<td align="left" style="cursor: pointer"
 				OnClick="location.href='<%=link%>'"><%=title%></td>
 			<!-- 제목에 링크거는 태그 -->
 			<td align="center"><%=writer%></td>
 			<td align="center"><%=date%></td>
-			<td>&nbsp;</td>
+
 		</tr>
 		<%
 			}

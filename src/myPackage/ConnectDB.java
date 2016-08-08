@@ -24,7 +24,8 @@ public class ConnectDB {
 
 	public void post() throws Exception {
 		//final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_pos=1&p_p_col_count=2&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview";
-		final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview&_EXT_MIRRORBBS_sCategory2=학사"
+		final String SSUurl = "http://ssu.ac.kr/web/kor/plaza_d_01?p_p_id=EXT_MIRRORBBS&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&_EXT_MIRRORBBS_struts_action=%2Fext%2Fmirrorbbs%2Fview&_EXT_MIRRORBBS_sCategory2=%ED%95%99%EC%82%AC";
+		
 		boolean IsUpdate = false;
 		Connection con = null;
 		Source source = null;
@@ -39,7 +40,7 @@ public class ConnectDB {
 		}
 
 		try {
-			PreparedStatement nstmt = con.prepareStatement("Select url from ssu order by num desc limit 1"); // 최상위글
+			PreparedStatement nstmt = con.prepareStatement("Select title,url from ssu order by num desc limit 1"); // 최상위글
 			ResultSet rs = nstmt.executeQuery();
 			if (!rs.next()) { // 최상위글 없을 경우 즉 최초
 				System.out.println("빈 테이블");
@@ -94,10 +95,13 @@ public class ConnectDB {
 								Element a = (Element) td.getAllElements(HTMLElementName.A).get(0);
 								Element writer = (Element) tr.getAllElements(HTMLElementName.TD).get(3);
 								Element date = (Element) tr.getAllElements(HTMLElementName.TD).get(4);
+								String oldUrl = rs.getString("url").substring(rs.getString("url").length()-8,rs.getString("url").length());
+								String newUrl = a.getAttributeValue("href").substring(a.getAttributeValue("href").length()-8,a.getAttributeValue("href").length());
 								//if ((a.getContent().toString().substring(2, 4)).equals("학사")) {
-									if (!rs.getString("url").equals(a.getAttributeValue("href"))) { // 최상위글하고
+									if (!oldUrl.equals(newUrl)) { // 최상위글하고
 										// 다르면
-										System.out.println(rs.getString("title") + "!=" + a.getContent()); 
+										System.out.println(oldUrl);
+										System.out.println(newUrl); 
 										PreparedStatement posted = con.prepareStatement(
 												"INSERT INTO ssu (title, writer, reg_date, url) VALUES ('"
 														+ a.getContent().toString() + "','"
@@ -110,9 +114,11 @@ public class ConnectDB {
 										System.out.println(rs.getString("title") + "=" + a.getContent()); 
 										break;
 									}
-								//}
+								
 							} catch (Exception e) {
 								System.out.println("Insert Error : " + e);
+								e.printStackTrace();
+
 							}
 						}
 					}
